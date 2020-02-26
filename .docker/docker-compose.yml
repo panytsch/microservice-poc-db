@@ -19,7 +19,7 @@ services:
       - MSSQL_SA_PASSWORD=Qwerty1234
     ports:
       - 1433:1433
-#    volumes:
-#      - ../sql/migration.sql:/var/opt/mssql/migration.sql
+    volumes:
+      - ./mssql/data/:/var/opt/mssql/data
     networks:
       - default
