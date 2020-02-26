@@ -1,0 +1,25 @@
+version: '3.7'
+services:
+#  go:
+#    container_name: go_with_dep
+#    build: ./.docker/go
+#    volumes:
+#      - C:\testGit\go_poc\mssql\go:.
+#      - C:\testGit\go_poc\mssql\go\.netrc:/root/.netrc
+#      - C:\testGit\go_poc\mssql\go\netrc:/root/netrc
+#    networks:
+#      - default
+#    environment:
+#      - mtu=1454
+  mssql:
+    container_name: mssql
+    build: ./mssql
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=Qwerty1234
+    ports:
+      - 1433:1433
+#    volumes:
+#      - ../sql/migration.sql:/var/opt/mssql/migration.sql
+    networks:
+      - default
