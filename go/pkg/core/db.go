@@ -1,9 +1,5 @@
 package db
 
-func init()  {
-	
-}
-
 import (
 	"database/sql"
 	"fmt"
@@ -18,19 +14,23 @@ var port = 1433
 var user = "sa"
 var password = "Qwerty1234"
 var database = "master"
+var db *gorm.DB
 
-func connect() {
+func Connect() {
 	connString := fmt.Sprintf("sqlserver://%s:%s@%s:%v?database=%s",
 		user, password, server, port, database)
 	db, err := gorm.Open("mssql", connString)
 	if err != nil {
 		log.Fatalf("Got error: %v", err)
 	}
-	defer db.Close()
-	
+
 	// sp := test.NewTwoDataSetsProcedure(db)
 	// res := sp.Run()
 	// log.Printf("sp result %v", res)
+}
+
+func Close() {
+	db.Close()
 }
 
 func baseUsage(db *sql.DB) {
