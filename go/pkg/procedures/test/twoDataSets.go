@@ -42,9 +42,7 @@ type TwoDataSetsProcedureReturnData struct {
 }
 
 func (sp *TwoDataSetsProcedure) Run() *TwoDataSetsProcedureResult {
-	result := &TwoDataSetsProcedureResult{}
-	result.ReturnInfo = &TwoDataSetsProcedureReturnInfo{}
-	result.Result = &TwoDataSetsProcedureReturnData{}
+	result := initResult()
 	sql := "exec " + sp.Config.Name
 	rows, err := sp.DB.Raw(sql).Rows()
 	if err != nil {
@@ -71,5 +69,12 @@ func (sp *TwoDataSetsProcedure) Run() *TwoDataSetsProcedureResult {
 		result.ReturnInfo.ReturnCode = core.NoReturnInfoReceived
 	}
 
+	return result
+}
+
+func initResult() *TwoDataSetsProcedureResult {
+	result := &TwoDataSetsProcedureResult{}
+	result.ReturnInfo = &TwoDataSetsProcedureReturnInfo{}
+	result.Result = &TwoDataSetsProcedureReturnData{}
 	return result
 }

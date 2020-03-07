@@ -3,24 +3,25 @@ FROM golang:latest
 # Set go bin which doesn't appear to be set already.
 ENV GOBIN /go/bin
 
-#ENV GIT_CURL_VERBOSE 0
-
-RUN git config --global github.user panytsch
-RUN git config --global github.token 852a5ffd134368f45b946959579fa6d8d58940ee
-
-RUN git config --global http.sslVerify false
-RUN git config --global http.proxyAuthMethod basic
+RUN sudo apt-get update
+    sudo apt-get install unzip \
+    curl && \
+    PROTOC_ZIP=protoc-3.7.1-linux-x86_64.zip && \
+    curl -OL https://github.com/protocolbuffers/protobuf/releases/download/v3.7.1/$PROTOC_ZIP && \
+    sudo unzip -o $PROTOC_ZIP -d /usr/local bin/protoc && \
+    sudo unzip -o $PROTOC_ZIP -d /usr/local 'include/*' && \
+    rm -f $PROTOC_ZIP
 
 # build directories
-RUN mkdir /app
-RUN mkdir /go/src/app
+RUN mkdir /app && \
+    mkdir /go/src/app
 ADD . /go/src/app
 
 WORKDIR /go/src/app
 
 # Go dep!
-RUN go get -u github.com/golang/dep/...
-RUN dep ensure
+RUN go get -u github.com/golang/dep/... && \
+    dep ensure
 
 # Build my app
 #RUN go build -o /app/main .
