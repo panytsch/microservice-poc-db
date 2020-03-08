@@ -24,5 +24,5 @@ RUN go get -u github.com/golang/dep/... && \
     dep ensure
 
 # Build my app
-#RUN go build -o /app/main .
+RUN go build -o /app/main .
 CMD ["/app/main"]

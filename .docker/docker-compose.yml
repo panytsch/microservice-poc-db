@@ -1,16 +1,14 @@
 version: '3.7'
 services:
-#  go:
-#    container_name: go_with_dep
-#    build: ./.docker/go
-#    volumes:
-#      - C:\testGit\go_poc\mssql\go:.
-#      - C:\testGit\go_poc\mssql\go\.netrc:/root/.netrc
-#      - C:\testGit\go_poc\mssql\go\netrc:/root/netrc
-#    networks:
-#      - default
-#    environment:
-#      - mtu=1454
+  go:
+    container_name: go_with_dep
+    build: ./go
+    ports:
+      - 80:80
+    volumes:
+      -${APP_HOST_PATH}:${APP_CONTAINER_PATH}
+    networks:
+      - default
   mssql:
     container_name: mssql
     image: mcr.microsoft.com/mssql/server:2017-latest
