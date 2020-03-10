@@ -4,7 +4,8 @@ services:
     container_name: go_with_dep
     build: ./go
     ports:
-      - 80:80
+      - 2345:2345
+      - 8080:8080
     volumes:
       -${APP_HOST_PATH}:${APP_CONTAINER_PATH}
     networks:

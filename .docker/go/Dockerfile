@@ -1,28 +1,7 @@
-FROM golang:latest
+FROM golang
+WORKDIR $APP_CONTAINER_PATH
+EXPOSE 8080 2345
+RUN go get github.com/derekparker/delve/cmd/dlv
+ADD $APP_HOST_PATH $APP_CONTAINER_PATH
 
-# Set go bin which doesn't appear to be set already.
-ENV GOBIN /go/bin
-
-RUN sudo apt-get update
-    sudo apt-get install unzip \
-    curl && \
-    PROTOC_ZIP=protoc-3.7.1-linux-x86_64.zip && \
-    curl -OL https://github.com/protocolbuffers/protobuf/releases/download/v3.7.1/$PROTOC_ZIP && \
-    sudo unzip -o $PROTOC_ZIP -d /usr/local bin/protoc && \
-    sudo unzip -o $PROTOC_ZIP -d /usr/local 'include/*' && \
-    rm -f $PROTOC_ZIP
-
-# build directories
-RUN mkdir /app && \
-    mkdir /go/src/app
-ADD . /go/src/app
-
-WORKDIR /go/src/app
-
-# Go dep!
-RUN go get -u github.com/golang/dep/... && \
-    dep ensure
-
-# Build my app
-RUN go build -o /app/main .
-CMD ["/app/main"]
+CMD ["dlv", "debug", "github.com/olivere/go-container-debugging", "--headless", "--listen=:2345", "--api-version=2", "--log"]
