@@ -20,9 +20,10 @@ const (
 var DB *gorm.DB
 
 func ConnectDB() {
+	var err error
 	connString := fmt.Sprintf("sqlserver://%s:%s@%s:%v?database=%s",
 		user, password, server, port, database)
-	DB, err := gorm.Open("mssql", connString)
+	DB, err = gorm.Open("mssql", connString)
 	if err != nil {
 		log.Fatalf("Got error: %v", err)
 	}
