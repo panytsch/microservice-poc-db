@@ -3,7 +3,7 @@ package main
 import (
 	_ "github.com/jinzhu/gorm/dialects/mssql"
 	"github.com/panytsch/microservice-poc-db/go/pkg/core"
-	"github.com/panytsch/microservice-poc-db/go/rest/server"
+	"github.com/panytsch/microservice-poc-db/go/rest"
 	"sync"
 )
 
@@ -13,7 +13,7 @@ func main() {
 	wg := new(sync.WaitGroup)
 	wg.Add(1)
 
-	go server.RunRestServer(wg)
+	go rest.RunRestServer(wg)
 
 	wg.Wait()
 	//sp := test.NewTwoDataSetsProcedure(core.DB)

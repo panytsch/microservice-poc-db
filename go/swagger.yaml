@@ -13,20 +13,38 @@ definitions:
     - Name
     - Password
     type: object
-    x-go-package: github.com/panytsch/microservice-poc-db/go/rest/routes
+    x-go-package: github.com/panytsch/microservice-poc-db/go/rest
   CreateNewUserResponse:
     properties:
       ID:
         format: uint64
         type: integer
-      Status:
-        $ref: '#/definitions/UserStatus'
+      Name:
+        type: string
     type: object
-    x-go-package: github.com/panytsch/microservice-poc-db/go/rest/routes
-  UserStatus:
-    format: uint8
+    x-go-package: github.com/panytsch/microservice-poc-db/go/rest
+  ErrorCode:
+    format: uint16
     type: integer
-    x-go-package: github.com/panytsch/microservice-poc-db/go/pkg/models
+    x-go-package: github.com/panytsch/microservice-poc-db/go/rest
+  ErrorResponse:
+    properties:
+      Code:
+        $ref: '#/definitions/ErrorCode'
+      Message:
+        description: Error description
+        type: string
+    type: object
+    x-go-package: github.com/panytsch/microservice-poc-db/go/rest
+  NoDataFoundResponse:
+    properties:
+      Code:
+        $ref: '#/definitions/ErrorCode'
+      Message:
+        description: Error description
+        type: string
+    type: object
+    x-go-package: github.com/panytsch/microservice-poc-db/go/rest
 host: localhost
 info:
   contact:
@@ -34,37 +52,59 @@ info:
     name: Roman Panasiuk
   description: |-
     the purpose of this application is to provide an application
-    that is using plain go code to define an API
-
-    This should demonstrate all the possible comment annotations
-    that are available to turn go code into a fully compliant swagger 2.0 spec
+    to work with DB like with service
   license:
     name: MIT
     url: http://opensource.org/licenses/MIT
-  termsOfService: there are no TOS at this moment, use at your own risk we take no
-    responsibility
   title: DB microservice REST API.
   version: 1.0.0
 paths:
   /user:
+    get:
+      description: Get user
+      operationId: getUser
+      parameters:
+      - in: header
+        name: Authorization
+        required: true
+        type: string
+      responses:
+        "200":
+          $ref: '#/responses/getUser'
+        "400":
+          $ref: '#/responses/noDataFound'
+      tags:
+      - user
     post:
       description: Create new user
       operationId: createUser
       parameters:
-      - description: New user`s info
-        in: body
+      - in: body
         name: Body
         schema:
           $ref: '#/definitions/CreateNewUserRequest'
       responses:
         "201":
           $ref: '#/responses/createUser'
+        "400":
+          $ref: '#/responses/errorResponse'
+      tags:
+      - user
 produces:
 - application/json
 responses:
   createUser:
     schema:
       $ref: '#/definitions/CreateNewUserResponse'
+  errorResponse:
+    schema:
+      $ref: '#/definitions/ErrorResponse'
+  getUser:
+    schema:
+      $ref: '#/definitions/CreateNewUserResponse'
+  noDataFound:
+    schema:
+      $ref: '#/definitions/NoDataFoundResponse'
 schemes:
 - http
 swagger: "2.0"
