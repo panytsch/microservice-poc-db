@@ -2,6 +2,8 @@ package models
 
 import "github.com/panytsch/microservice-poc-db/go/pkg/core"
 
+type UserStatus uint8
+
 type User struct {
 	ID       uint64
 	Name     string

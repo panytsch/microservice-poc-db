@@ -1,0 +1,70 @@
+basePath: /rest/v1
+consumes:
+- application/json
+definitions:
+  CreateNewUserRequest:
+    properties:
+      Name:
+        type: string
+        uniqueItems: true
+      Password:
+        type: string
+    required:
+    - Name
+    - Password
+    type: object
+    x-go-package: github.com/panytsch/microservice-poc-db/go/rest/routes
+  CreateNewUserResponse:
+    properties:
+      ID:
+        format: uint64
+        type: integer
+      Status:
+        $ref: '#/definitions/UserStatus'
+    type: object
+    x-go-package: github.com/panytsch/microservice-poc-db/go/rest/routes
+  UserStatus:
+    format: uint8
+    type: integer
+    x-go-package: github.com/panytsch/microservice-poc-db/go/pkg/models
+host: localhost
+info:
+  contact:
+    email: gfyroman@gmail.com
+    name: Roman Panasiuk
+  description: |-
+    the purpose of this application is to provide an application
+    that is using plain go code to define an API
+
+    This should demonstrate all the possible comment annotations
+    that are available to turn go code into a fully compliant swagger 2.0 spec
+  license:
+    name: MIT
+    url: http://opensource.org/licenses/MIT
+  termsOfService: there are no TOS at this moment, use at your own risk we take no
+    responsibility
+  title: DB microservice REST API.
+  version: 1.0.0
+paths:
+  /user:
+    post:
+      description: Create new user
+      operationId: createUser
+      parameters:
+      - description: New user`s info
+        in: body
+        name: Body
+        schema:
+          $ref: '#/definitions/CreateNewUserRequest'
+      responses:
+        "201":
+          $ref: '#/responses/createUser'
+produces:
+- application/json
+responses:
+  createUser:
+    schema:
+      $ref: '#/definitions/CreateNewUserResponse'
+schemes:
+- http
+swagger: "2.0"
