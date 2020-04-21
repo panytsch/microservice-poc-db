@@ -34,7 +34,7 @@ type CreateNewUserResponse struct {
 	Name string
 }
 
-// swagger:route POST /user user createUser
+// swagger:route POST /rest/v1/user user createUser
 //
 // Create new user
 //     Responses:
@@ -84,9 +84,16 @@ func createUser(name string, pass string) (*models.User, error) {
 
 //swagger:parameters getUser
 type SwaggerGetUserRequest struct {
-	//in: header
+	//in: body
 	//required:true
-	Authorization string
+	Body GetUserRequest
+}
+
+type GetUserRequest struct {
+	//required:true
+	Name string
+	//required:true
+	Password string
 }
 
 //swagger:response getUser
@@ -100,19 +107,27 @@ type GetUserResponse struct {
 	Name string
 }
 
-// swagger:route GET /user user getUser
+// swagger:route POST /rest/v1//user/get user getUser
 //
 // Get user
 //     Responses:
 //       200: getUser
 //       400: noDataFound
+//       400: errorResponse
 func GetUserHandler(w http.ResponseWriter, r *http.Request) {
-	var user *models.User
-	if r.Header.Get("Authorization") != "test" {
-		user = findUser()
-	} else {
-		user = new(models.User)
+	req := GetUserRequest{}
+	decoder := json.NewDecoder(r.Body)
+	er := decoder.Decode(&req)
+	if er != nil {
+		log.Printf("error while decode request: %v\n", er)
+		w.WriteHeader(http.StatusBadRequest)
+		_ = SendJSON(ErrorResponse{
+			Message: "Bad request provided",
+			Code:    GeneralBad,
+		}, w)
+		return
 	}
+	user := findUser(req.Name, req.Password)
 
 	if user.ID == 0 {
 		w.WriteHeader(http.StatusBadRequest)
@@ -129,8 +144,10 @@ func GetUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func findUser() *models.User {
+func findUser(name string, pass string) *models.User {
 	user := new(models.User)
-	core.DB.First(user)
+	user.Name = name
+	user.Password = pass
+	core.DB.Find(user)
 	return user
 }

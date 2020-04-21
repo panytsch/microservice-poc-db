@@ -4,8 +4,6 @@
 // to work with DB like with service
 //
 //     Schemes: http
-//     Host: localhost
-//     BasePath: /rest/v1
 //     Version: 1.0.0
 //     License: MIT http://opensource.org/licenses/MIT
 //     Contact: Roman Panasiuk<gfyroman@gmail.com>
@@ -50,7 +48,7 @@ func RunRestServer(wg *sync.WaitGroup) {
 
 func collectRoutes(router *mux.Router) {
 	router.HandleFunc("/user", CreateNewUserHandler).Methods(http.MethodPost)
-	router.HandleFunc("/user", GetUserHandler).Methods(http.MethodGet)
+	router.HandleFunc("/user/get", GetUserHandler).Methods(http.MethodPost)
 }
 
 func setDocsRoute(router *mux.Router) {

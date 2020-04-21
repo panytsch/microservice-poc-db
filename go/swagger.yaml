@@ -1,4 +1,3 @@
-basePath: /rest/v1
 consumes:
 - application/json
 definitions:
@@ -36,6 +35,17 @@ definitions:
         type: string
     type: object
     x-go-package: github.com/panytsch/microservice-poc-db/go/rest
+  GetUserRequest:
+    properties:
+      Name:
+        type: string
+      Password:
+        type: string
+    required:
+    - Name
+    - Password
+    type: object
+    x-go-package: github.com/panytsch/microservice-poc-db/go/rest
   NoDataFoundResponse:
     properties:
       Code:
@@ -45,7 +55,6 @@ definitions:
         type: string
     type: object
     x-go-package: github.com/panytsch/microservice-poc-db/go/rest
-host: localhost
 info:
   contact:
     email: gfyroman@gmail.com
@@ -59,22 +68,24 @@ info:
   title: DB microservice REST API.
   version: 1.0.0
 paths:
-  /user:
-    get:
+  /rest/v1//user/get:
+    post:
       description: Get user
       operationId: getUser
       parameters:
-      - in: header
-        name: Authorization
+      - in: body
+        name: Body
         required: true
-        type: string
+        schema:
+          $ref: '#/definitions/GetUserRequest'
       responses:
         "200":
           $ref: '#/responses/getUser'
         "400":
-          $ref: '#/responses/noDataFound'
+          $ref: '#/responses/errorResponse'
       tags:
       - user
+  /rest/v1/user:
     post:
       description: Create new user
       operationId: createUser

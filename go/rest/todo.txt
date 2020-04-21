@@ -11,6 +11,8 @@ base path /v1/rest
  	name: ''
 }
 
+-------------- DONE -------------------
+
 method make transaction => user_token + amount
 		get one => token + id
 		get list => token + limit
