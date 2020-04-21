@@ -35,8 +35,10 @@ type CreateTransactionProcedureReturnInfo struct {
 
 func (sp *CreateTransactionProcedure) Run(userID uint64, status TransactionStatus, amount TransactionAmount) *CreateTransactionProcedureResult {
 	result := new(CreateTransactionProcedureResult)
-	sql := "exec " + sp.Config.Name + "?,?,?"
-	rows, err := sp.DB.Raw(sql, userID, status, amount).Rows()
+	result.Result = new(Transaction)
+	result.ReturnInfo = CreateTransactionProcedureReturnInfo{}
+	sql := "exec " + sp.Config.Name + " ?,?,?"
+	rows, err := sp.DB.Raw(sql, userID, status, int(amount)).Rows()
 	if err != nil {
 		result.ReturnInfo.ReturnCode = ErrorWhileRun
 		log.Printf("While run %v\n", err)

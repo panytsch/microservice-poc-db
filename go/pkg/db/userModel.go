@@ -1,9 +1,10 @@
 package db
 
 type User struct {
-	ID       uint64
-	Name     string
-	Password string
+	ID          uint64
+	Transaction []Transaction `gorm:"foreignkey:UserID"`
+	Name        string
+	Password    string
 }
 
 func (u *User) Create() {
