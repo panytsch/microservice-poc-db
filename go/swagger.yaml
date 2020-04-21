@@ -12,7 +12,7 @@ definitions:
     - Name
     - Password
     type: object
-    x-go-package: github.com/panytsch/microservice-poc-db/go/rest
+    x-go-package: github.com/panytsch/microservice-poc-db/go/rest_v1
   CreateNewUserResponse:
     properties:
       ID:
@@ -21,11 +21,11 @@ definitions:
       Name:
         type: string
     type: object
-    x-go-package: github.com/panytsch/microservice-poc-db/go/rest
+    x-go-package: github.com/panytsch/microservice-poc-db/go/rest_v1
   ErrorCode:
     format: uint16
     type: integer
-    x-go-package: github.com/panytsch/microservice-poc-db/go/rest
+    x-go-package: github.com/panytsch/microservice-poc-db/go/rest_v1
   ErrorResponse:
     properties:
       Code:
@@ -34,7 +34,7 @@ definitions:
         description: Error description
         type: string
     type: object
-    x-go-package: github.com/panytsch/microservice-poc-db/go/rest
+    x-go-package: github.com/panytsch/microservice-poc-db/go/rest_v1
   GetUserRequest:
     properties:
       Name:
@@ -45,7 +45,26 @@ definitions:
     - Name
     - Password
     type: object
-    x-go-package: github.com/panytsch/microservice-poc-db/go/rest
+    x-go-package: github.com/panytsch/microservice-poc-db/go/rest_v1
+  MakeTransactionRequest:
+    properties:
+      Amount:
+        $ref: '#/definitions/TransactionAmount'
+    required:
+    - Amount
+    type: object
+    x-go-package: github.com/panytsch/microservice-poc-db/go/rest_v1
+  MakeTransactionResponse:
+    properties:
+      Amount:
+        $ref: '#/definitions/TransactionAmount'
+      ID:
+        format: uint64
+        type: integer
+      Status:
+        $ref: '#/definitions/TransactionStatus'
+    type: object
+    x-go-package: github.com/panytsch/microservice-poc-db/go/rest_v1
   NoDataFoundResponse:
     properties:
       Code:
@@ -54,7 +73,15 @@ definitions:
         description: Error description
         type: string
     type: object
-    x-go-package: github.com/panytsch/microservice-poc-db/go/rest
+    x-go-package: github.com/panytsch/microservice-poc-db/go/rest_v1
+  TransactionAmount:
+    format: uint64
+    type: integer
+    x-go-package: github.com/panytsch/microservice-poc-db/go/pkg/models
+  TransactionStatus:
+    format: int64
+    type: integer
+    x-go-package: github.com/panytsch/microservice-poc-db/go/pkg/models
 info:
   contact:
     email: gfyroman@gmail.com
@@ -68,7 +95,7 @@ info:
   title: DB microservice REST API.
   version: 1.0.0
 paths:
-  /rest/v1//user/get:
+  /rest/v1//users/get:
     post:
       description: Get user
       operationId: getUser
@@ -85,7 +112,29 @@ paths:
           $ref: '#/responses/errorResponse'
       tags:
       - user
-  /rest/v1/user:
+  /rest/v1/transaction:
+    post:
+      description: Create new Transaction
+      operationId: createTransaction
+      parameters:
+      - description: User token
+        in: header
+        name: Authorization
+        type: string
+      - in: body
+        name: Body
+        schema:
+          $ref: '#/definitions/MakeTransactionRequest'
+      responses:
+        "201":
+          $ref: '#/responses/createTransaction'
+        "400":
+          $ref: '#/responses/errorResponse'
+        "401":
+          $ref: '#/responses/errorResponse'
+      tags:
+      - transaction
+  /rest/v1/users:
     post:
       description: Create new user
       operationId: createUser
@@ -104,6 +153,9 @@ paths:
 produces:
 - application/json
 responses:
+  createTransaction:
+    schema:
+      $ref: '#/definitions/MakeTransactionResponse'
   createUser:
     schema:
       $ref: '#/definitions/CreateNewUserResponse'
