@@ -23,3 +23,7 @@ type Transaction struct {
 func (t *Transaction) Create() {
 	DB.Create(t)
 }
+
+func (*Transaction) TableName() string {
+	return "transactions"
+}

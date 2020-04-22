@@ -57,17 +57,20 @@ type MakeTransactionResponse struct {
 func MakeTransactionHandler(w http.ResponseWriter, r *http.Request) {
 	user := core.GetUserByToken(r.Header.Get("Authorization"))
 	if user.ID == 0 {
+		w.WriteHeader(http.StatusBadRequest)
 		sendBadResponse(w, "User's token probably wrong. User not found", WrongToken)
 		return
 	}
 	req := new(MakeTransactionRequest)
 	err := req.capture(r)
 	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
 		sendBadResponse(w, err.Error(), ParsingRequestError)
 		return
 	}
 	transaction := core.CreateTransaction(user.ID, req.Amount)
 	if !transaction.IsSuccess() {
+		w.WriteHeader(http.StatusBadRequest)
 		sendBadResponse(w, "Can't create transaction", GeneralBad)
 		return
 	}
@@ -80,7 +83,6 @@ func MakeTransactionHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func sendBadResponse(w http.ResponseWriter, message string, internalCode ErrorCode) {
-	w.WriteHeader(http.StatusBadRequest)
 	_ = SendJSON(ErrorResponse{
 		Message: message,
 		Code:    internalCode,
@@ -155,8 +157,12 @@ func GetTransactionsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	user := core.GetUserByToken(r.Header.Get("Authorization"))
-	transactions, _ := core.GetLastTransactions(uint(req.limit), uint(req.offset), user.ID)
-	var res []GetTransactionsResponse
+	transactions, err := core.GetLastTransactions(req.limit, req.offset, user.ID)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		sendBadResponse(w, err.Error(), GeneralBad)
+	}
+	res := make([]GetTransactionsResponse, 0)
 	for _, t := range transactions {
 		res = append(res, GetTransactionsResponse{
 			ID:     t.ID,

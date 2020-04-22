@@ -22,6 +22,18 @@ func GetTransactionByIDAndUserID(id uint, userID uint) (*db.Transaction, error) 
 
 func GetLastTransactions(limit uint, offset uint, userID uint) ([]*db.Transaction, error) {
 	var transactions []*db.Transaction
-	db.DB.Find(&transactions).Limit(limit).Offset(offset).Where("user_id = ?", userID)
+	emptyTr := db.Transaction{}
+	rows, err := db.DB.Table(emptyTr.TableName()).Order("id desc").Where("user_id = ?", userID).Limit(limit).Offset(offset).Rows()
+	if err != nil {
+		return transactions, errors.New("can't find any transaction")
+	}
+	for rows.Next() {
+		tr := new(db.Transaction)
+		err = db.DB.ScanRows(rows, tr)
+		if err != nil {
+			return transactions, errors.New("can't find any transaction")
+		}
+		transactions = append(transactions, tr)
+	}
 	return transactions, nil
 }
