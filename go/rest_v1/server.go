@@ -54,6 +54,7 @@ func collectRestRoutes(router *mux.Router) {
 
 	transactionsRouter := router.PathPrefix("/transactions").Subrouter()
 	transactionsRouter.HandleFunc("", MakeTransactionHandler).Methods(http.MethodPost)
+	transactionsRouter.HandleFunc("/{TransactionID}", GetTransactionHandler).Methods(http.MethodGet)
 	transactionsRouter.Use(checkUserTokenMiddleware)
 }
 

@@ -1,8 +1,13 @@
 package db
 
-type TransactionStatus int
 type TransactionAmount int
 
+// possible values will be show in swagger docs
+
+// - 1 - created
+type TransactionStatus int
+
+// after adding status add comment to type above. In this case new status will be shown in doc
 const (
 	TransactionStatusCreated TransactionStatus = iota + 1
 )

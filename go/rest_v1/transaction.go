@@ -3,9 +3,11 @@ package rest_v1
 import (
 	"encoding/json"
 	"errors"
+	"github.com/gorilla/mux"
 	"github.com/panytsch/microservice-poc-db/go/pkg/core"
 	"github.com/panytsch/microservice-poc-db/go/pkg/db"
 	"net/http"
+	"strconv"
 )
 
 //swagger:parameters createTransaction
@@ -45,7 +47,7 @@ type MakeTransactionResponse struct {
 	Amount db.TransactionAmount
 }
 
-// swagger:route POST /rest/v1/transaction transaction createTransaction
+// swagger:route POST /rest/v1/transactions transaction createTransaction
 //
 // Create new Transaction
 //     Responses:
@@ -83,4 +85,52 @@ func sendBadResponse(w http.ResponseWriter, message string, internalCode ErrorCo
 		Message: message,
 		Code:    internalCode,
 	}, w)
+}
+
+// swagger:route GET /rest/v1/transactions/{TransactionID} transaction getTransaction
+//
+// Get one Transaction
+//     Responses:
+//       200: getTransaction
+//       400: errorResponse
+//       401: errorResponse
+func GetTransactionHandler(w http.ResponseWriter, r *http.Request) {
+	transactionID, _ := strconv.ParseUint(mux.Vars(r)["TransactionID"], 10, 64)
+	user := core.GetUserByToken(r.Header.Get("Authorization"))
+	transaction, err := core.GetTransactionByIDAndUserID(transactionID, user.ID)
+	if err != nil { //not found
+		w.WriteHeader(http.StatusBadRequest)
+		sendBadResponse(w, err.Error(), NoDataFound)
+	} else {
+		w.WriteHeader(http.StatusOK)
+		_ = SendJSON(GetTransactionResponse{
+			ID:     transaction.ID,
+			Status: transaction.Status,
+			Amount: transaction.Amount,
+		}, w)
+	}
+}
+
+//swagger:parameters getTransaction
+type SwaggerGetTransactionRequest struct {
+	//User token
+	//in:header
+	//required:true
+	Authorization string
+
+	//in:path
+	//required:true
+	TransactionID uint64
+}
+
+//swagger:response getTransaction
+type SwaggerGetTransactionResponse struct {
+	//in:body
+	Body GetTransactionResponse
+}
+
+type GetTransactionResponse struct {
+	ID     uint64
+	Status db.TransactionStatus
+	Amount db.TransactionAmount
 }

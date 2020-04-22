@@ -35,6 +35,17 @@ definitions:
         type: string
     type: object
     x-go-package: github.com/panytsch/microservice-poc-db/go/rest_v1
+  GetTransactionResponse:
+    properties:
+      Amount:
+        $ref: '#/definitions/TransactionAmount'
+      ID:
+        format: uint64
+        type: integer
+      Status:
+        $ref: '#/definitions/TransactionStatus'
+    type: object
+    x-go-package: github.com/panytsch/microservice-poc-db/go/rest_v1
   GetUserRequest:
     properties:
       Name:
@@ -75,13 +86,14 @@ definitions:
     type: object
     x-go-package: github.com/panytsch/microservice-poc-db/go/rest_v1
   TransactionAmount:
-    format: uint64
-    type: integer
-    x-go-package: github.com/panytsch/microservice-poc-db/go/pkg/models
-  TransactionStatus:
     format: int64
     type: integer
-    x-go-package: github.com/panytsch/microservice-poc-db/go/pkg/models
+    x-go-package: github.com/panytsch/microservice-poc-db/go/pkg/db
+  TransactionStatus:
+    description: 1 - created
+    format: int64
+    type: integer
+    x-go-package: github.com/panytsch/microservice-poc-db/go/pkg/db
 info:
   contact:
     email: gfyroman@gmail.com
@@ -112,7 +124,7 @@ paths:
           $ref: '#/responses/errorResponse'
       tags:
       - user
-  /rest/v1/transaction:
+  /rest/v1/transactions:
     post:
       description: Create new Transaction
       operationId: createTransaction
@@ -128,6 +140,30 @@ paths:
       responses:
         "201":
           $ref: '#/responses/createTransaction'
+        "400":
+          $ref: '#/responses/errorResponse'
+        "401":
+          $ref: '#/responses/errorResponse'
+      tags:
+      - transaction
+  /rest/v1/transactions/{TransactionID}:
+    get:
+      description: Get one Transaction
+      operationId: getTransaction
+      parameters:
+      - description: User token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - format: uint64
+        in: path
+        name: TransactionID
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/getTransaction'
         "400":
           $ref: '#/responses/errorResponse'
         "401":
@@ -162,6 +198,9 @@ responses:
   errorResponse:
     schema:
       $ref: '#/definitions/ErrorResponse'
+  getTransaction:
+    schema:
+      $ref: '#/definitions/GetTransactionResponse'
   getUser:
     schema:
       $ref: '#/definitions/CreateNewUserResponse'
