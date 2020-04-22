@@ -187,7 +187,7 @@ type SwaggerGetTransactionsRequest struct {
 
 	//default value is 0
 	//in:query
-	//required:false
+	//required:true
 	offset uint
 }
 
