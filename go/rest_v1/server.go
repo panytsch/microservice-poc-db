@@ -59,6 +59,16 @@ func collectRestRoutes(router *mux.Router) {
 		"offset", "{offset:[0-9]+}",
 	)
 	transactionsRouter.HandleFunc("/{TransactionID}", GetTransactionHandler).Methods(http.MethodGet)
+
+	refundsRouter := router.PathPrefix("/refunds").Subrouter()
+	refundsRouter.HandleFunc("", MakeRefundHandler).Methods(http.MethodPost)
+	refundsRouter.HandleFunc("", GetRefundsHandler).Methods(http.MethodGet).Queries(
+		"limit", "{limit:[0-9]+}",
+		"offset", "{offset:[0-9]+}",
+	)
+	refundsRouter.HandleFunc("/{RefundID}", GetRefundHandler).Methods(http.MethodGet)
+
+	refundsRouter.Use(checkUserTokenMiddleware)
 	transactionsRouter.Use(checkUserTokenMiddleware)
 }
 

@@ -38,7 +38,7 @@ func connectDB() {
 
 type Model struct {
 	gorm.Model
-	CreatedAt struct{} `gorm:"-" json:"-"`
-	UpdatedAt struct{} `gorm:"-" json:"-"`
-	DeletedAt struct{} `gorm:"-" json:"-"`
+	CreatedAt struct{} `gorm:"-" sql:"-"`
+	UpdatedAt struct{} `gorm:"-" sql:"-"`
+	DeletedAt struct{} `gorm:"-" sql:"-"`
 }

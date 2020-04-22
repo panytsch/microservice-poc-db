@@ -35,6 +35,28 @@ definitions:
         type: string
     type: object
     x-go-package: github.com/panytsch/microservice-poc-db/go/rest_v1
+  GetRefundResponse:
+    properties:
+      Amount:
+        $ref: '#/definitions/RefundAmount'
+      ID:
+        format: uint64
+        type: integer
+      Status:
+        $ref: '#/definitions/RefundStatus'
+    type: object
+    x-go-package: github.com/panytsch/microservice-poc-db/go/rest_v1
+  GetRefundsResponse:
+    properties:
+      Amount:
+        $ref: '#/definitions/RefundAmount'
+      ID:
+        format: uint64
+        type: integer
+      Status:
+        $ref: '#/definitions/RefundStatus'
+    type: object
+    x-go-package: github.com/panytsch/microservice-poc-db/go/rest_v1
   GetTransactionResponse:
     properties:
       Amount:
@@ -68,6 +90,25 @@ definitions:
     - Password
     type: object
     x-go-package: github.com/panytsch/microservice-poc-db/go/rest_v1
+  MakeRefundRequest:
+    properties:
+      Amount:
+        $ref: '#/definitions/RefundAmount'
+    required:
+    - Amount
+    type: object
+    x-go-package: github.com/panytsch/microservice-poc-db/go/rest_v1
+  MakeRefundResponse:
+    properties:
+      Amount:
+        $ref: '#/definitions/RefundAmount'
+      ID:
+        format: uint64
+        type: integer
+      Status:
+        $ref: '#/definitions/RefundStatus'
+    type: object
+    x-go-package: github.com/panytsch/microservice-poc-db/go/rest_v1
   MakeTransactionRequest:
     properties:
       Amount:
@@ -96,12 +137,29 @@ definitions:
         type: string
     type: object
     x-go-package: github.com/panytsch/microservice-poc-db/go/rest_v1
+  RefundAmount:
+    format: int64
+    type: integer
+    x-go-package: github.com/panytsch/microservice-poc-db/go/pkg/db
+  RefundStatus:
+    description: |-
+      1 RefundStatusCreated
+      2 RefundStatusInProgress
+      3 RefundStatusFinished
+      4 RefundStatusCancelled
+    format: int64
+    type: integer
+    x-go-package: github.com/panytsch/microservice-poc-db/go/pkg/db
   TransactionAmount:
     format: int64
     type: integer
     x-go-package: github.com/panytsch/microservice-poc-db/go/pkg/db
   TransactionStatus:
-    description: 1 - created
+    description: |-
+      1 TransactionStatusCreated
+      2 TransactionStatusInProgress
+      3 TransactionStatusInFinished
+      4 TransactionStatusInCancelled
     format: int64
     type: integer
     x-go-package: github.com/panytsch/microservice-poc-db/go/pkg/db
@@ -135,6 +193,70 @@ paths:
           $ref: '#/responses/errorResponse'
       tags:
       - user
+  /rest/v1/refunds:
+    get:
+      description: Get few Refunds
+      operationId: getRefunds
+      parameters:
+      - description: User token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      responses:
+        "200":
+          $ref: '#/responses/getRefunds'
+        "400":
+          $ref: '#/responses/errorResponse'
+        "401":
+          $ref: '#/responses/errorResponse'
+      tags:
+      - refund
+    post:
+      description: Create new Refund
+      operationId: createRefund
+      parameters:
+      - description: User token
+        in: header
+        name: Authorization
+        type: string
+      - in: body
+        name: Body
+        schema:
+          $ref: '#/definitions/MakeRefundRequest'
+      responses:
+        "201":
+          $ref: '#/responses/createRefund'
+        "400":
+          $ref: '#/responses/errorResponse'
+        "401":
+          $ref: '#/responses/errorResponse'
+      tags:
+      - refund
+  /rest/v1/refunds/{RefundID}:
+    get:
+      description: Get one Refund
+      operationId: getRefund
+      parameters:
+      - description: User token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - format: uint64
+        in: path
+        name: RefundID
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/getRefund'
+        "400":
+          $ref: '#/responses/errorResponse'
+        "401":
+          $ref: '#/responses/errorResponse'
+      tags:
+      - refund
   /rest/v1/transactions:
     get:
       description: Get few Transaction
@@ -218,6 +340,9 @@ paths:
 produces:
 - application/json
 responses:
+  createRefund:
+    schema:
+      $ref: '#/definitions/MakeRefundResponse'
   createTransaction:
     schema:
       $ref: '#/definitions/MakeTransactionResponse'
@@ -227,6 +352,14 @@ responses:
   errorResponse:
     schema:
       $ref: '#/definitions/ErrorResponse'
+  getRefund:
+    schema:
+      $ref: '#/definitions/GetRefundResponse'
+  getRefunds:
+    schema:
+      items:
+        $ref: '#/definitions/GetRefundsResponse'
+      type: array
   getTransaction:
     schema:
       $ref: '#/definitions/GetTransactionResponse'
