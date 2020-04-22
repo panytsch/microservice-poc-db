@@ -33,7 +33,7 @@ type CreateTransactionProcedureReturnInfo struct {
 	SPReturnInfo
 }
 
-func (sp *CreateTransactionProcedure) Run(userID uint64, status TransactionStatus, amount TransactionAmount) *CreateTransactionProcedureResult {
+func (sp *CreateTransactionProcedure) Run(userID uint, status TransactionStatus, amount TransactionAmount) *CreateTransactionProcedureResult {
 	result := new(CreateTransactionProcedureResult)
 	result.Result = new(Transaction)
 	result.ReturnInfo = CreateTransactionProcedureReturnInfo{}

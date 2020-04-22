@@ -1,7 +1,7 @@
 package db
 
 type User struct {
-	ID          uint64
+	ID          uint
 	Transaction []Transaction `gorm:"foreignkey:UserID"`
 	Name        string
 	Password    string

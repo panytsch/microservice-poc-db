@@ -46,6 +46,17 @@ definitions:
         $ref: '#/definitions/TransactionStatus'
     type: object
     x-go-package: github.com/panytsch/microservice-poc-db/go/rest_v1
+  GetTransactionsResponse:
+    properties:
+      Amount:
+        $ref: '#/definitions/TransactionAmount'
+      ID:
+        format: uint64
+        type: integer
+      Status:
+        $ref: '#/definitions/TransactionStatus'
+    type: object
+    x-go-package: github.com/panytsch/microservice-poc-db/go/rest_v1
   GetUserRequest:
     properties:
       Name:
@@ -125,6 +136,24 @@ paths:
       tags:
       - user
   /rest/v1/transactions:
+    get:
+      description: Get few Transaction
+      operationId: getTransactions
+      parameters:
+      - description: User token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      responses:
+        "200":
+          $ref: '#/responses/getTransactions'
+        "400":
+          $ref: '#/responses/errorResponse'
+        "401":
+          $ref: '#/responses/errorResponse'
+      tags:
+      - transaction
     post:
       description: Create new Transaction
       operationId: createTransaction
@@ -201,6 +230,11 @@ responses:
   getTransaction:
     schema:
       $ref: '#/definitions/GetTransactionResponse'
+  getTransactions:
+    schema:
+      items:
+        $ref: '#/definitions/GetTransactionsResponse'
+      type: array
   getUser:
     schema:
       $ref: '#/definitions/CreateNewUserResponse'

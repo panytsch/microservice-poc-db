@@ -28,7 +28,7 @@ type SwaggerCreateNewUserResponse struct {
 }
 
 type CreateNewUserResponse struct {
-	ID   uint64
+	ID   uint
 	Name string
 }
 
@@ -89,7 +89,7 @@ type SwaggerGetUserResponse struct {
 }
 
 type GetUserResponse struct {
-	ID   uint64
+	ID   uint
 	Name string
 }
 

@@ -42,7 +42,7 @@ type SwaggerMakeTransactionResponse struct {
 }
 
 type MakeTransactionResponse struct {
-	ID     uint64
+	ID     uint
 	Status db.TransactionStatus
 	Amount db.TransactionAmount
 }
@@ -96,8 +96,13 @@ func sendBadResponse(w http.ResponseWriter, message string, internalCode ErrorCo
 //       401: errorResponse
 func GetTransactionHandler(w http.ResponseWriter, r *http.Request) {
 	transactionID, _ := strconv.ParseUint(mux.Vars(r)["TransactionID"], 10, 64)
+	if transactionID == 0 {
+		w.WriteHeader(http.StatusBadRequest)
+		sendBadResponse(w, "transaction id weren't provided", NoDataFound)
+		return
+	}
 	user := core.GetUserByToken(r.Header.Get("Authorization"))
-	transaction, err := core.GetTransactionByIDAndUserID(transactionID, user.ID)
+	transaction, err := core.GetTransactionByIDAndUserID(uint(transactionID), user.ID)
 	if err != nil { //not found
 		w.WriteHeader(http.StatusBadRequest)
 		sendBadResponse(w, err.Error(), NoDataFound)
@@ -120,7 +125,7 @@ type SwaggerGetTransactionRequest struct {
 
 	//in:path
 	//required:true
-	TransactionID uint64
+	TransactionID uint
 }
 
 //swagger:response getTransaction
@@ -130,7 +135,82 @@ type SwaggerGetTransactionResponse struct {
 }
 
 type GetTransactionResponse struct {
-	ID     uint64
+	ID     uint
+	Status db.TransactionStatus
+	Amount db.TransactionAmount
+}
+
+// swagger:route GET /rest/v1/transactions transaction getTransactions
+//
+// Get few Transaction
+//     Responses:
+//       200: getTransactions
+//       400: errorResponse
+//       401: errorResponse
+func GetTransactionsHandler(w http.ResponseWriter, r *http.Request) {
+	req := new(getTransactionsRequest).capture(r)
+	if !req.isValid() {
+		w.WriteHeader(http.StatusBadRequest)
+		sendBadResponse(w, "mandatory data weren't provided", BadRequest)
+		return
+	}
+	user := core.GetUserByToken(r.Header.Get("Authorization"))
+	transactions, _ := core.GetLastTransactions(uint(req.limit), uint(req.offset), user.ID)
+	var res []GetTransactionsResponse
+	for _, t := range transactions {
+		res = append(res, GetTransactionsResponse{
+			ID:     t.ID,
+			Status: t.Status,
+			Amount: t.Amount,
+		})
+	}
+	w.WriteHeader(http.StatusOK)
+	_ = SendJSON(res, w)
+}
+
+//swagger:parameters getTransactions
+type SwaggerGetTransactionsRequest struct {
+	//User token
+	//in:header
+	//required:true
+	Authorization string
+
+	//in:query
+	//required:true
+	limit uint
+
+	//default value is 0
+	//in:query
+	//required:false
+	offset uint
+}
+
+type getTransactionsRequest struct {
+	limit  uint
+	offset uint
+}
+
+func (req *getTransactionsRequest) isValid() bool {
+	return req.limit != 0
+}
+
+func (req *getTransactionsRequest) capture(r *http.Request) *getTransactionsRequest {
+	vars := mux.Vars(r)
+	parsedUint, _ := strconv.ParseUint(vars["limit"], 10, 64)
+	req.limit = uint(parsedUint)
+	parsedUint, _ = strconv.ParseUint(vars["offset"], 10, 64)
+	req.offset = uint(parsedUint)
+	return req
+}
+
+//swagger:response getTransactions
+type SwaggerGetTransactionsResponse struct {
+	//in:body
+	Body []GetTransactionsResponse
+}
+
+type GetTransactionsResponse struct {
+	ID     uint
 	Status db.TransactionStatus
 	Amount db.TransactionAmount
 }

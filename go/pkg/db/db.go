@@ -19,6 +19,7 @@ const (
 
 func init() {
 	connectDB()
+	DB.LogMode(true)
 }
 
 var DB *gorm.DB
@@ -35,6 +36,9 @@ func connectDB() {
 	DB.DB().SetMaxOpenConns(MaxOpenConn)
 }
 
-func closeDB() {
-	_ = DB.Close()
+type Model struct {
+	gorm.Model
+	CreatedAt struct{} `gorm:"-" json:"-"`
+	UpdatedAt struct{} `gorm:"-" json:"-"`
+	DeletedAt struct{} `gorm:"-" json:"-"`
 }

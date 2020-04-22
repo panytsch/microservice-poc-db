@@ -13,9 +13,10 @@ const (
 )
 
 type Transaction struct {
-	ID     uint64
+	Model
 	Status TransactionStatus
-	UserID uint64
+	User   *User
+	UserID uint
 	Amount TransactionAmount
 }
 
