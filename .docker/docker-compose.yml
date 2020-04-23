@@ -1,18 +1,14 @@
 version: '3.7'
 services:
-#  go:
-#    container_name: go_with_dep
-#    build: ${GO_DOCKERFILE_PATH}
-#    ports:
-#      - 2345:2345
-#      - 8080:8080
-#    volumes:
-#      - ${APP_HOST_PATH}:${APP_CONTAINER_PATH}
-#    environment:
-#      - APP_HOST_PATH=${APP_HOST_PATH}
-#      - APP_CONTAINER_PATH=${APP_CONTAINER_PATH}
-#    networks:
-#      - default
+  go:
+    container_name: go_with_dep
+    build: ${GO_DOCKERFILE_PATH}
+    depends_on:
+      - mssql
+    ports:
+      - 80:80
+    networks:
+      - default
   mssql:
     container_name: mssql
     image: mcr.microsoft.com/mssql/server:2017-latest

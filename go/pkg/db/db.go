@@ -10,7 +10,7 @@ import (
 const (
 	MaxIdleCon  = 3
 	MaxOpenConn = 30
-	server      = "localhost"
+	server      = "mssql"
 	port        = 1433
 	user        = "sa"
 	password    = "Qwerty1234"
