@@ -24,6 +24,7 @@ import (
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
+	"os"
 	"sync"
 	"time"
 )
@@ -36,7 +37,7 @@ func RunRestServer(wg *sync.WaitGroup) {
 
 	srv := &http.Server{
 		Handler: router,
-		Addr:    ":80",
+		Addr:    ":" + os.Getenv("APP_PORT"),
 		// Good practice: enforce timeouts for servers you create!
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,

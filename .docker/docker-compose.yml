@@ -6,18 +6,26 @@ services:
     depends_on:
       - mssql
     ports:
-      - 80:80
+      - ${APP_PORT}:${APP_PORT}
     networks:
       - default
+    env_file:
+      - go/vars.env
+      - shared_vars.env
+    environment:
+      - DB_PORT=${DB_PORT}
+      - APP_PORT=${APP_PORT}
   mssql:
     container_name: mssql
     image: mcr.microsoft.com/mssql/server:2017-latest
+    env_file:
+      - mssql/vars.env
+      - shared_vars.env
     environment:
-      - ACCEPT_EULA=Y
-      - MSSQL_SA_PASSWORD=${DB_PASSWORD}
+      - MSSQL_TCP_PORT=${DB_PORT}
     ports:
-      - 1433:1433
+      - ${DB_PORT}:${DB_PORT}
     volumes:
-      - ./mssql/data/:/var/opt/mssql/data
+      - ${DB_HOST_PATH}:${DB_CONTAINER_PATH}
     networks:
       - default
