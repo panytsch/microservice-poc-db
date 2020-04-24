@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"time"
 )
 
 func init() {
@@ -19,9 +20,21 @@ var DB *gorm.DB
 func connectDB() {
 	var err error
 	connString := getConnectionString()
-	DB, err = gorm.Open("mssql", connString)
-	if err != nil {
-		log.Fatalf("Got error: %v", err)
+	connInterval, _ := strconv.Atoi(os.Getenv("DB_CONNECT_INTERVAL_IN_SEC"))
+	retries, _ := strconv.Atoi(os.Getenv("DB_CONNECT_RETRIES"))
+	for i := 0; i < retries; i++ {
+		log.Println("Trying to connect to DB")
+		DB, err = gorm.Open("mssql", connString)
+		if err == nil {
+			log.Println("connected to DB")
+			break
+		}
+		log.Println("didn't connect to DB. Sleeping")
+		time.Sleep(time.Duration(connInterval) * time.Second)
+	}
+
+	if DB == nil || err != nil {
+		log.Fatalln("Didn't connect to DB")
 	}
 	MaxIdleCon, _ := strconv.Atoi(os.Getenv("DB_MAX_IDLE_CONNECTIONS"))
 	MaxOpenConn, _ := strconv.Atoi(os.Getenv("DB_MAX_OPEN_CONNECTIONS"))
