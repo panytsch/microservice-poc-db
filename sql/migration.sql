@@ -26,5 +26,7 @@ create table dbo.refunds
     foreign key (user_id) references dbo.users (id)
 )
 
----
-
+alter table dbo.users
+    add
+        balance int not null default 0,
+        cc_number varchar(30) not null default '';

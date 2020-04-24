@@ -9,6 +9,7 @@ require (
 	github.com/gorilla/mux v1.7.4
 	github.com/jinzhu/gorm v1.9.12
 	github.com/jinzhu/inflection v1.0.0
+	github.com/joho/godotenv v1.3.0
 	github.com/panytsch/go_poc v0.0.0-20200224122413-0d69c7e7b657
 	go.mongodb.org/mongo-driver v1.1.1
 	golang.org/x/crypto v0.0.0-20200311171314-f7b00557c8c4

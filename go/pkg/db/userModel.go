@@ -5,6 +5,8 @@ type User struct {
 	Transaction []Transaction `gorm:"foreignkey:UserID"`
 	Name        string
 	Password    string
+	Balance     int
+	CCNumber    string `gorm:"column:cc_number"`
 }
 
 func (u *User) Create() {

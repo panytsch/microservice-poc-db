@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mssql"
+	"github.com/joho/godotenv"
 	"log"
 	"os"
 	"strconv"
@@ -11,6 +12,7 @@ import (
 )
 
 func init() {
+	_ = godotenv.Load("development.env")
 	connectDB()
 	DB.LogMode(true)
 }
