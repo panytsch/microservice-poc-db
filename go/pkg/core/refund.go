@@ -18,8 +18,8 @@ func MakeRefund(amount db.RefundAmount, userId uint) *db.Refund {
 func GetRefundByIDAndUserID(id uint, userID uint) (*db.Refund, error) {
 	tr := new(db.Refund)
 	tr.ID = id
-	tr.User = &db.User{ID: userID}
-	db.DB.Unscoped().Find(tr)
+	tr.UserID = userID
+	db.DB.Unscoped().Where(tr).Find(tr)
 	if tr.Status == 0 {
 		return tr, errors.New("refund not found")
 	}

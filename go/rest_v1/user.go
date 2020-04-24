@@ -89,8 +89,10 @@ type SwaggerGetUserResponse struct {
 }
 
 type GetUserResponse struct {
-	ID   uint
-	Name string
+	ID       uint
+	Name     string
+	Balance  int
+	CCNumber string
 }
 
 // swagger:route POST /rest/v1//users/get user getUser
@@ -124,8 +126,10 @@ func GetUserHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		w.WriteHeader(http.StatusOK)
 		_ = SendJSON(GetUserResponse{
-			ID:   user.ID,
-			Name: user.Name,
+			ID:       user.ID,
+			Name:     user.Name,
+			Balance:  user.Balance,
+			CCNumber: user.CCNumber,
 		}, w)
 	}
 }

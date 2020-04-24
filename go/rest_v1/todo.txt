@@ -1,7 +1,12 @@
 user balance
 add field CC number
 
+get user by token
+
 update transaction and refund
+update balance
+add cc
+update cc
 
 Logs
 redis

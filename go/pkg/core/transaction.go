@@ -12,8 +12,8 @@ func CreateTransaction(userID uint, amount db.TransactionAmount) *db.CreateTrans
 func GetTransactionByIDAndUserID(id uint, userID uint) (*db.Transaction, error) {
 	tr := new(db.Transaction)
 	tr.ID = id
-	tr.User = &db.User{ID: userID}
-	db.DB.Unscoped().Find(tr)
+	tr.UserID = userID
+	db.DB.Unscoped().Where(tr).Find(tr)
 	if tr.Status == 0 {
 		return tr, errors.New("transaction not found")
 	}

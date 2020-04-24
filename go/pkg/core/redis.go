@@ -7,7 +7,7 @@ import (
 func GetUserByToken(token string) *db.User {
 	user := new(db.User)
 	if token == TestToken {
-		db.DB.First(user)
+		db.DB.Unscoped().First(user)
 	}
 	return user
 }

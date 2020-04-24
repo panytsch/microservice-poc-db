@@ -1,16 +1,15 @@
 package db
 
 type User struct {
-	ID          uint
-	Transaction []Transaction `gorm:"foreignkey:UserID"`
-	Name        string
-	Password    string
-	Balance     int
-	CCNumber    string `gorm:"column:cc_number"`
+	Model
+	Name     string
+	Password string
+	Balance  int
+	CCNumber string `gorm:"column:cc_number"`
 }
 
 func (u *User) Create() {
-	DB.Create(u)
+	DB.Omit("created_at", "updated_at", "deleted_at").Create(u)
 }
 
 func (*User) TableName() string {
@@ -20,6 +19,6 @@ func (*User) TableName() string {
 func (u *User) FindByNameAndPass(name string, pass string) *User {
 	u.Name = name
 	u.Password = pass
-	DB.Find(u)
+	DB.Unscoped().Where(u).Find(u)
 	return u
 }

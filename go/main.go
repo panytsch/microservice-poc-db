@@ -1,7 +1,6 @@
 package main
 
 import (
-	_ "github.com/jinzhu/gorm/dialects/mssql"
 	"github.com/panytsch/microservice-poc-db/go/rest_v1"
 	"sync"
 )
