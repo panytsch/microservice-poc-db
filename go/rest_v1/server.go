@@ -51,6 +51,7 @@ func collectRestRoutes(router *mux.Router) {
 	router.Use(restHeaders)
 	usersRouter := router.PathPrefix("/users").Subrouter()
 	usersRouter.HandleFunc("", CreateNewUserHandler).Methods(http.MethodPost)
+	usersRouter.HandleFunc("", GetUserByTokenHandler).Methods(http.MethodGet)
 	usersRouter.HandleFunc("/get", GetUserHandler).Methods(http.MethodPost)
 
 	transactionsRouter := router.PathPrefix("/transactions").Subrouter()

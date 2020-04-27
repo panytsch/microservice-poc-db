@@ -8,31 +8,6 @@ import (
 	"net/http"
 )
 
-//swagger:parameters createUser
-type SwaggerCreateNewUserRequest struct {
-	//in:body
-	Body CreateNewUserRequest
-}
-
-type CreateNewUserRequest struct {
-	//unique:true
-	//required:true
-	Name string
-	//required:true
-	Password string
-}
-
-//swagger:response createUser
-type SwaggerCreateNewUserResponse struct {
-	//in:body
-	Body CreateNewUserResponse
-}
-
-type CreateNewUserResponse struct {
-	ID   uint
-	Name string
-}
-
 // swagger:route POST /rest/v1/users user createUser
 //
 // Create new user
@@ -67,33 +42,6 @@ func CreateNewUserHandler(w http.ResponseWriter, r *http.Request) {
 		ID:   user.ID,
 		Name: user.Name,
 	}, w)
-}
-
-//swagger:parameters getUser
-type SwaggerGetUserRequest struct {
-	//in: body
-	//required:true
-	Body GetUserRequest
-}
-
-type GetUserRequest struct {
-	//required:true
-	Name string
-	//required:true
-	Password string
-}
-
-//swagger:response getUser
-type SwaggerGetUserResponse struct {
-	//in:body
-	Body CreateNewUserResponse
-}
-
-type GetUserResponse struct {
-	ID       uint
-	Name     string
-	Balance  int
-	CCNumber string
 }
 
 // swagger:route POST /rest/v1//users/get user getUser
@@ -133,4 +81,33 @@ func GetUserHandler(w http.ResponseWriter, r *http.Request) {
 			CCNumber: user.CCNumber,
 		}, w)
 	}
+}
+
+// swagger:route GET /rest/v1//users user getUserByToken
+//
+// Get user
+//     Responses:
+//       200: getUserByToken
+//       400: errorResponse
+func GetUserByTokenHandler(w http.ResponseWriter, r *http.Request) {
+	sharedUser := core.GetUserByToken(r.Header.Get("Authorization"))
+	if sharedUser.ID == 0 {
+		w.WriteHeader(http.StatusBadRequest)
+		sendBadResponse(w, "no user in shared storage", BadRequest)
+		return
+	}
+
+	user, err := core.GetUserByID(sharedUser.ID)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		sendBadResponse(w, "no user in db", BadRequest)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	_ = SendJSON(GetUserResponse{
+		ID:       user.ID,
+		Name:     user.Name,
+		Balance:  user.Balance,
+		CCNumber: user.CCNumber,
+	}, w)
 }

@@ -90,6 +90,20 @@ definitions:
     - Password
     type: object
     x-go-package: github.com/panytsch/microservice-poc-db/go/rest_v1
+  GetUserResponse:
+    properties:
+      Balance:
+        format: int64
+        type: integer
+      CCNumber:
+        type: string
+      ID:
+        format: uint64
+        type: integer
+      Name:
+        type: string
+    type: object
+    x-go-package: github.com/panytsch/microservice-poc-db/go/rest_v1
   MakeRefundRequest:
     properties:
       Amount:
@@ -176,6 +190,23 @@ info:
   title: DB microservice REST API.
   version: 1.0.0
 paths:
+  /rest/v1//users:
+    get:
+      description: Get user
+      operationId: getUserByToken
+      parameters:
+      - description: User token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      responses:
+        "200":
+          $ref: '#/responses/getUserByToken'
+        "400":
+          $ref: '#/responses/errorResponse'
+      tags:
+      - user
   /rest/v1//users/get:
     post:
       description: Get user
@@ -370,7 +401,10 @@ responses:
       type: array
   getUser:
     schema:
-      $ref: '#/definitions/CreateNewUserResponse'
+      $ref: '#/definitions/GetUserResponse'
+  getUserByToken:
+    schema:
+      $ref: '#/definitions/GetUserResponse'
   noDataFound:
     schema:
       $ref: '#/definitions/NoDataFoundResponse'
