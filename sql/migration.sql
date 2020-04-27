@@ -8,7 +8,7 @@ create table dbo.users
 insert into dbo.users (name, password)
 values ('admin', 'admin');
 
-create table dbo.transactions
+create table dbo.payments
 (
     id      int primary key identity (1,1),
     status  int not null,

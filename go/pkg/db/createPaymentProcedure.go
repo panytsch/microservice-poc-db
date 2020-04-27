@@ -4,39 +4,39 @@ import (
 	"log"
 )
 
-const CreateTransaction string = "createTransaction"
+const CreatePayment string = "createPayment"
 
-type CreateTransactionProcedure struct {
+type CreatePaymentProcedure struct {
 	StoredProcedure
-	Config *CreateTransactionProcedureConfig
+	Config *CreatePaymentProcedureConfig
 }
 
-type CreateTransactionProcedureConfig struct {
+type CreatePaymentProcedureConfig struct {
 	SPConfig
 }
 
-func NewCreateTransactionProcedure() *CreateTransactionProcedure {
-	res := &CreateTransactionProcedure{}
+func NewCreatePaymentProcedure() *CreatePaymentProcedure {
+	res := &CreatePaymentProcedure{}
 	res.DB = DB
-	config := &CreateTransactionProcedureConfig{}
-	config.Name = CreateTransaction
+	config := &CreatePaymentProcedureConfig{}
+	config.Name = CreatePayment
 	res.Config = config
 	return res
 }
 
-type CreateTransactionProcedureResult struct {
-	Result     *Transaction
-	ReturnInfo CreateTransactionProcedureReturnInfo
+type CreatePaymentProcedureResult struct {
+	Result     *Payment
+	ReturnInfo CreatePaymentProcedureReturnInfo
 }
 
-type CreateTransactionProcedureReturnInfo struct {
+type CreatePaymentProcedureReturnInfo struct {
 	SPReturnInfo
 }
 
-func (sp *CreateTransactionProcedure) Run(userID uint, status TransactionStatus, amount TransactionAmount) *CreateTransactionProcedureResult {
-	result := new(CreateTransactionProcedureResult)
-	result.Result = new(Transaction)
-	result.ReturnInfo = CreateTransactionProcedureReturnInfo{}
+func (sp *CreatePaymentProcedure) Run(userID uint, status PaymentStatus, amount PaymentAmount) *CreatePaymentProcedureResult {
+	result := new(CreatePaymentProcedureResult)
+	result.Result = new(Payment)
+	result.ReturnInfo = CreatePaymentProcedureReturnInfo{}
 	sql := "exec " + sp.Config.Name + " ?,?,?"
 	rows, err := sp.DB.Raw(sql, userID, status, int(amount)).Rows()
 	if err != nil {
@@ -66,6 +66,6 @@ func (sp *CreateTransactionProcedure) Run(userID uint, status TransactionStatus,
 	return result
 }
 
-func (result *CreateTransactionProcedureResult) IsSuccess() bool {
+func (result *CreatePaymentProcedureResult) IsSuccess() bool {
 	return result.ReturnInfo.ReturnCode == 1
 }

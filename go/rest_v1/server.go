@@ -54,13 +54,13 @@ func collectRestRoutes(router *mux.Router) {
 	usersRouter.HandleFunc("", GetUserByTokenHandler).Methods(http.MethodGet)
 	usersRouter.HandleFunc("/get", GetUserHandler).Methods(http.MethodPost)
 
-	transactionsRouter := router.PathPrefix("/transactions").Subrouter()
-	transactionsRouter.HandleFunc("", MakeTransactionHandler).Methods(http.MethodPost)
-	transactionsRouter.HandleFunc("", GetTransactionsHandler).Methods(http.MethodGet).Queries(
+	PaymentsRouter := router.PathPrefix("/Payments").Subrouter()
+	PaymentsRouter.HandleFunc("", MakePaymentHandler).Methods(http.MethodPost)
+	PaymentsRouter.HandleFunc("", GetPaymentsHandler).Methods(http.MethodGet).Queries(
 		"limit", "{limit:[0-9]+}",
 		"offset", "{offset:[0-9]+}",
 	)
-	transactionsRouter.HandleFunc("/{TransactionID}", GetTransactionHandler).Methods(http.MethodGet)
+	PaymentsRouter.HandleFunc("/{PaymentID}", GetPaymentHandler).Methods(http.MethodGet)
 
 	refundsRouter := router.PathPrefix("/refunds").Subrouter()
 	refundsRouter.HandleFunc("", MakeRefundHandler).Methods(http.MethodPost)
@@ -71,7 +71,7 @@ func collectRestRoutes(router *mux.Router) {
 	refundsRouter.HandleFunc("/{RefundID}", GetRefundHandler).Methods(http.MethodGet)
 
 	refundsRouter.Use(checkUserTokenMiddleware)
-	transactionsRouter.Use(checkUserTokenMiddleware)
+	PaymentsRouter.Use(checkUserTokenMiddleware)
 }
 
 func setDocsRoute(router *mux.Router) {

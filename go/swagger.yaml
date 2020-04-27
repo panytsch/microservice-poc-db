@@ -35,6 +35,28 @@ definitions:
         type: string
     type: object
     x-go-package: github.com/panytsch/microservice-poc-db/go/rest_v1
+  GetPaymentResponse:
+    properties:
+      Amount:
+        $ref: '#/definitions/PaymentAmount'
+      ID:
+        format: uint64
+        type: integer
+      Status:
+        $ref: '#/definitions/PaymentStatus'
+    type: object
+    x-go-package: github.com/panytsch/microservice-poc-db/go/rest_v1
+  GetPaymentsResponse:
+    properties:
+      Amount:
+        $ref: '#/definitions/PaymentAmount'
+      ID:
+        format: uint64
+        type: integer
+      Status:
+        $ref: '#/definitions/PaymentStatus'
+    type: object
+    x-go-package: github.com/panytsch/microservice-poc-db/go/rest_v1
   GetRefundResponse:
     properties:
       Amount:
@@ -55,28 +77,6 @@ definitions:
         type: integer
       Status:
         $ref: '#/definitions/RefundStatus'
-    type: object
-    x-go-package: github.com/panytsch/microservice-poc-db/go/rest_v1
-  GetTransactionResponse:
-    properties:
-      Amount:
-        $ref: '#/definitions/TransactionAmount'
-      ID:
-        format: uint64
-        type: integer
-      Status:
-        $ref: '#/definitions/TransactionStatus'
-    type: object
-    x-go-package: github.com/panytsch/microservice-poc-db/go/rest_v1
-  GetTransactionsResponse:
-    properties:
-      Amount:
-        $ref: '#/definitions/TransactionAmount'
-      ID:
-        format: uint64
-        type: integer
-      Status:
-        $ref: '#/definitions/TransactionStatus'
     type: object
     x-go-package: github.com/panytsch/microservice-poc-db/go/rest_v1
   GetUserRequest:
@@ -104,6 +104,25 @@ definitions:
         type: string
     type: object
     x-go-package: github.com/panytsch/microservice-poc-db/go/rest_v1
+  MakePaymentRequest:
+    properties:
+      Amount:
+        $ref: '#/definitions/PaymentAmount'
+    required:
+    - Amount
+    type: object
+    x-go-package: github.com/panytsch/microservice-poc-db/go/rest_v1
+  MakePaymentResponse:
+    properties:
+      Amount:
+        $ref: '#/definitions/PaymentAmount'
+      ID:
+        format: uint64
+        type: integer
+      Status:
+        $ref: '#/definitions/PaymentStatus'
+    type: object
+    x-go-package: github.com/panytsch/microservice-poc-db/go/rest_v1
   MakeRefundRequest:
     properties:
       Amount:
@@ -123,25 +142,6 @@ definitions:
         $ref: '#/definitions/RefundStatus'
     type: object
     x-go-package: github.com/panytsch/microservice-poc-db/go/rest_v1
-  MakeTransactionRequest:
-    properties:
-      Amount:
-        $ref: '#/definitions/TransactionAmount'
-    required:
-    - Amount
-    type: object
-    x-go-package: github.com/panytsch/microservice-poc-db/go/rest_v1
-  MakeTransactionResponse:
-    properties:
-      Amount:
-        $ref: '#/definitions/TransactionAmount'
-      ID:
-        format: uint64
-        type: integer
-      Status:
-        $ref: '#/definitions/TransactionStatus'
-    type: object
-    x-go-package: github.com/panytsch/microservice-poc-db/go/rest_v1
   NoDataFoundResponse:
     properties:
       Code:
@@ -151,6 +151,19 @@ definitions:
         type: string
     type: object
     x-go-package: github.com/panytsch/microservice-poc-db/go/rest_v1
+  PaymentAmount:
+    format: int64
+    type: integer
+    x-go-package: github.com/panytsch/microservice-poc-db/go/pkg/db
+  PaymentStatus:
+    description: |-
+      1 PaymentStatusCreated
+      2 PaymentStatusInProgress
+      3 PaymentStatusInFinished
+      4 PaymentStatusInCancelled
+    format: int64
+    type: integer
+    x-go-package: github.com/panytsch/microservice-poc-db/go/pkg/db
   RefundAmount:
     format: int64
     type: integer
@@ -161,19 +174,6 @@ definitions:
       2 RefundStatusInProgress
       3 RefundStatusFinished
       4 RefundStatusCancelled
-    format: int64
-    type: integer
-    x-go-package: github.com/panytsch/microservice-poc-db/go/pkg/db
-  TransactionAmount:
-    format: int64
-    type: integer
-    x-go-package: github.com/panytsch/microservice-poc-db/go/pkg/db
-  TransactionStatus:
-    description: |-
-      1 TransactionStatusCreated
-      2 TransactionStatusInProgress
-      3 TransactionStatusInFinished
-      4 TransactionStatusInCancelled
     format: int64
     type: integer
     x-go-package: github.com/panytsch/microservice-poc-db/go/pkg/db
@@ -224,6 +224,70 @@ paths:
           $ref: '#/responses/errorResponse'
       tags:
       - user
+  /rest/v1/Payments:
+    get:
+      description: Get few Payment
+      operationId: getPayments
+      parameters:
+      - description: User token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      responses:
+        "200":
+          $ref: '#/responses/getPayments'
+        "400":
+          $ref: '#/responses/errorResponse'
+        "401":
+          $ref: '#/responses/errorResponse'
+      tags:
+      - Payment
+    post:
+      description: Create new Payment
+      operationId: createPayment
+      parameters:
+      - description: User token
+        in: header
+        name: Authorization
+        type: string
+      - in: body
+        name: Body
+        schema:
+          $ref: '#/definitions/MakePaymentRequest'
+      responses:
+        "201":
+          $ref: '#/responses/createPayment'
+        "400":
+          $ref: '#/responses/errorResponse'
+        "401":
+          $ref: '#/responses/errorResponse'
+      tags:
+      - Payment
+  /rest/v1/Payments/{PaymentID}:
+    get:
+      description: Get one Payment
+      operationId: getPayment
+      parameters:
+      - description: User token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - format: uint64
+        in: path
+        name: PaymentID
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/getPayment'
+        "400":
+          $ref: '#/responses/errorResponse'
+        "401":
+          $ref: '#/responses/errorResponse'
+      tags:
+      - Payment
   /rest/v1/refunds:
     get:
       description: Get few Refunds
@@ -288,70 +352,6 @@ paths:
           $ref: '#/responses/errorResponse'
       tags:
       - refund
-  /rest/v1/transactions:
-    get:
-      description: Get few Transaction
-      operationId: getTransactions
-      parameters:
-      - description: User token
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      responses:
-        "200":
-          $ref: '#/responses/getTransactions'
-        "400":
-          $ref: '#/responses/errorResponse'
-        "401":
-          $ref: '#/responses/errorResponse'
-      tags:
-      - transaction
-    post:
-      description: Create new Transaction
-      operationId: createTransaction
-      parameters:
-      - description: User token
-        in: header
-        name: Authorization
-        type: string
-      - in: body
-        name: Body
-        schema:
-          $ref: '#/definitions/MakeTransactionRequest'
-      responses:
-        "201":
-          $ref: '#/responses/createTransaction'
-        "400":
-          $ref: '#/responses/errorResponse'
-        "401":
-          $ref: '#/responses/errorResponse'
-      tags:
-      - transaction
-  /rest/v1/transactions/{TransactionID}:
-    get:
-      description: Get one Transaction
-      operationId: getTransaction
-      parameters:
-      - description: User token
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - format: uint64
-        in: path
-        name: TransactionID
-        required: true
-        type: integer
-      responses:
-        "200":
-          $ref: '#/responses/getTransaction'
-        "400":
-          $ref: '#/responses/errorResponse'
-        "401":
-          $ref: '#/responses/errorResponse'
-      tags:
-      - transaction
   /rest/v1/users:
     post:
       description: Create new user
@@ -371,18 +371,26 @@ paths:
 produces:
 - application/json
 responses:
+  createPayment:
+    schema:
+      $ref: '#/definitions/MakePaymentResponse'
   createRefund:
     schema:
       $ref: '#/definitions/MakeRefundResponse'
-  createTransaction:
-    schema:
-      $ref: '#/definitions/MakeTransactionResponse'
   createUser:
     schema:
       $ref: '#/definitions/CreateNewUserResponse'
   errorResponse:
     schema:
       $ref: '#/definitions/ErrorResponse'
+  getPayment:
+    schema:
+      $ref: '#/definitions/GetPaymentResponse'
+  getPayments:
+    schema:
+      items:
+        $ref: '#/definitions/GetPaymentsResponse'
+      type: array
   getRefund:
     schema:
       $ref: '#/definitions/GetRefundResponse'
@@ -390,14 +398,6 @@ responses:
     schema:
       items:
         $ref: '#/definitions/GetRefundsResponse'
-      type: array
-  getTransaction:
-    schema:
-      $ref: '#/definitions/GetTransactionResponse'
-  getTransactions:
-    schema:
-      items:
-        $ref: '#/definitions/GetTransactionsResponse'
       type: array
   getUser:
     schema:
