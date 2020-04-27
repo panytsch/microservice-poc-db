@@ -3,6 +3,7 @@ package rest_v1
 import (
 	"encoding/json"
 	"github.com/panytsch/microservice-poc-db/go/pkg/core"
+	"github.com/panytsch/microservice-poc-db/go/pkg/db"
 	"log"
 	"net/http"
 )
@@ -115,7 +116,7 @@ func GetUserHandler(w http.ResponseWriter, r *http.Request) {
 		}, w)
 		return
 	}
-	user := new(core.User).User.FindByNameAndPass(req.Name, req.Password)
+	user := new(db.User).FindByNameAndPass(req.Name, req.Password)
 
 	if user.ID == 0 {
 		w.WriteHeader(http.StatusBadRequest)

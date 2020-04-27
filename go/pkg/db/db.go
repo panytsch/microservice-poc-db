@@ -1,6 +1,7 @@
 package db
 
 import (
+	"flag"
 	"fmt"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mssql"
@@ -12,7 +13,12 @@ import (
 )
 
 func init() {
-	_ = godotenv.Load("development.env")
+	overrideVars := flag.Bool("dev", false, "get dev environment variables instead of docker")
+	flag.Parse()
+	if *overrideVars {
+		log.Println("overriding env vars by dev")
+		_ = godotenv.Load("development.env")
+	}
 	connectDB()
 	DB.LogMode(true)
 }
