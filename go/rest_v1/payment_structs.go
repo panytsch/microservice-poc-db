@@ -73,6 +73,7 @@ type GetPaymentResponse struct {
 	ID     uint
 	Status db.PaymentStatus
 	Amount db.PaymentAmount
+	UserID uint
 }
 
 //endregion
@@ -125,4 +126,32 @@ type GetPaymentsResponse struct {
 	Amount db.PaymentAmount
 }
 
+//endregion
+//region updatePayment
+
+//swagger:parameters updatePayment
+type SwaggerUpdatePaymentStatusRequest struct {
+	//required:true
+	//in:path
+	PaymentID uint
+
+	//in:body
+	Body updatePaymentStatusRequest
+}
+
+type updatePaymentStatusRequest struct {
+	Status db.PaymentStatus
+	Amount db.PaymentAmount
+	UserID uint
+}
+
+//swagger:response updatePayment
+type SwaggerUpdatePaymentStatusResponse struct {
+	//in:body
+	Body updatePaymentResponse
+}
+
+type updatePaymentResponse struct {
+	GetPaymentResponse
+}
 //endregion

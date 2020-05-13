@@ -3,7 +3,10 @@ add field CC number
 
 get user by token
 
-update Payment and refund
+---------done-------------
+
+update Payment
+update refund
 update balance
 add cc
 update cc

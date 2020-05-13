@@ -67,6 +67,7 @@ func GetPaymentHandler(w http.ResponseWriter, r *http.Request) {
 			ID:     Payment.ID,
 			Status: Payment.Status,
 			Amount: Payment.Amount,
+			UserID: Payment.UserID,
 		}, w)
 	}
 }
@@ -101,4 +102,28 @@ func GetPaymentsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusOK)
 	_ = SendJSON(res, w)
+}
+
+
+// swagger:route GET /rest/v1/Payments/{PaymentID} Payment getPayment
+//
+// Get one Payment
+//     Responses:
+//       200: getPayment
+//       400: errorResponse
+//       401: errorResponse
+func UpdatePaymentHandler(w http.ResponseWriter, r *http.Request) {
+	PaymentID, _ := strconv.ParseUint(mux.Vars(r)["PaymentID"], 10, 64)
+	if PaymentID == 0 {
+		w.WriteHeader(http.StatusBadRequest)
+		sendBadResponse(w, "Payment id weren't provided", NoDataFound)
+		return
+	}
+	user := core.GetUserByToken(r.Header.Get("Authorization"))
+	Payment, err := core.GetPaymentByIDAndUserID(uint(PaymentID), user.ID)
+	if err != nil { //not found
+		w.WriteHeader(http.StatusBadRequest)
+		sendBadResponse(w, err.Error(), NoDataFound)
+		return
+	}
 }
